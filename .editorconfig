@@ -1,0 +1,10 @@
+root = true
+
+# All files
+[*]
+encoding = utf-8
+indent_style = tab
+
+# Xml files
+[*.xml]
+indent_size = 2
