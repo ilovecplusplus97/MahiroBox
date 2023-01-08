@@ -89,6 +89,9 @@ void MainWindow::quit_hook() {
 }
 
 LRESULT WINAPI MainWindow::KeyboardProc(INT code, WPARAM wParam, LPARAM lParam) {
+	if (UserData::instance()->open_dialog) {
+		return CallNextHookEx(hKeyboardHook, code, wParam, lParam);
+	}
 	auto* info = (KBDLLHOOKSTRUCT*)lParam;
 	if ((wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN)) {
 		if (MainWindow::current->setting_window != nullptr) {
@@ -111,20 +114,23 @@ LRESULT WINAPI MainWindow::KeyboardProc(INT code, WPARAM wParam, LPARAM lParam) 
 		if (UserData::instance()->left_key.count(info->vkCode) > 0) {
 			MainWindow::current->left_pressed = true;
 			MainWindow::current->mahiro_count++;
+			MainWindow::current->update();
 		}
 		if (UserData::instance()->right_key.count(info->vkCode) > 0) {
 			MainWindow::current->right_pressed = true;
 			MainWindow::current->mahiro_count++;
+			MainWindow::current->update();
 		}
 	}
 	else {
 		if (UserData::instance()->left_key.count(info->vkCode) > 0) {
 			MainWindow::current->left_pressed = false;
+			MainWindow::current->update();
 		}
 		if (UserData::instance()->right_key.count(info->vkCode) > 0) {
 			MainWindow::current->right_pressed = false;
+			MainWindow::current->update();
 		}
 	}
-	MainWindow::current->update();
 	return CallNextHookEx(hKeyboardHook, code, wParam, lParam);
 }

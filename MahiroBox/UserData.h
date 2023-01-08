@@ -12,6 +12,7 @@ public:
 
 	std::set<DWORD> left_key;
 	std::set<DWORD> right_key;
+	bool open_dialog;
 
 	bool load(const std::string& filename);
 	void save(const std::string& filename) const;

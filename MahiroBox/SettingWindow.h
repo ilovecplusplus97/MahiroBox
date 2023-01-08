@@ -27,6 +27,9 @@ public:
 	void unselect_right();
 	void add_left_key(DWORD vkcode, DWORD scancode);
 	void add_right_key(DWORD vkcode, DWORD scancode);
+
+	void closeEvent(QCloseEvent*) override;
+	void reject() override;
 private slots:
 	void on_W2LeftKeyAddButton_clicked();
 	void on_W2RightKeyAddButton_clicked();

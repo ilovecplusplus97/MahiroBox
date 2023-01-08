@@ -18,8 +18,7 @@ SettingWindow::SettingWindow(QWidget *parent)
 
 SettingWindow::~SettingWindow()
 {
-	m_selected_left = false;
-	m_selected_right = false;
+	
 }
 
 bool SettingWindow::selected_left() const {
@@ -106,20 +105,35 @@ void SettingWindow::load_keys() {
 	}
 }
 
+void SettingWindow::closeEvent(QCloseEvent*) {
+	m_selected_left = false;
+	m_selected_right = false;
+}
+
+void SettingWindow::reject() {
+
+}
+
 void SettingWindow::on_W1LoadButton_clicked() {
-	QString filename = QFileDialog::getOpenFileName(this, "选择文件");
+	UserData::instance()->open_dialog = true;
+	QString filename = QFileDialog::getOpenFileName(this, "选择文件", QString(), "XML配置文件(*.xml)");
+	UserData::instance()->open_dialog = false;
 	if (filename.isEmpty()) {
 		return;
 	}
 	if (!UserData::instance()->load(filename.toStdString())) {
+		UserData::instance()->open_dialog = true;
 		QMessageBox::critical(this, "错误", "文件非法", QMessageBox::Ok);
+		UserData::instance()->open_dialog = false;
 		return;
 	}
 	load_keys();
 }
 
 void SettingWindow::on_W2SaveButton_clicked() {
-	QString filename = QFileDialog::getSaveFileName(this, "保存文件");
+	UserData::instance()->open_dialog = true;
+	QString filename = QFileDialog::getSaveFileName(this, "保存文件", QString(), "XML配置文件(*.xml)");
+	UserData::instance()->open_dialog = false;
 	if (filename.isEmpty()) {
 		return;
 	}
