@@ -18,8 +18,7 @@ SettingWindow::SettingWindow(QWidget *parent)
 
 SettingWindow::~SettingWindow()
 {
-	m_selected_left = false;
-	m_selected_right = false;
+	
 }
 
 bool SettingWindow::selected_left() const {
@@ -104,6 +103,15 @@ void SettingWindow::load_keys() {
 	for (auto i : UserData::instance()->right_key) {
 		add_right_key(i, MapVirtualKey(i, MAPVK_VK_TO_VSC));
 	}
+}
+
+void SettingWindow::closeEvent(QCloseEvent*) {
+	m_selected_left = false;
+	m_selected_right = false;
+}
+
+void SettingWindow::reject() {
+
 }
 
 void SettingWindow::on_W1LoadButton_clicked() {
