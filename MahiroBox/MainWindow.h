@@ -13,7 +13,6 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 	friend class SettingWindow;
-	friend LRESULT WINAPI KeyboardProc(INT code, WPARAM wParam, LPARAM lParam);
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -30,8 +29,8 @@ private:
     std::vector<QPixmap*> m_left_hand_images;
     std::vector<QPixmap*> m_right_hand_images;
 	SettingWindow* setting_window;
-	bool left_pressed;
-	bool right_pressed;
+	int left_pressed_count;
+	int right_pressed_count;
 	int mahiro_count;
 
     void load_resources();

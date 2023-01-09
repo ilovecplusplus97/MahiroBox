@@ -10,8 +10,8 @@ HHOOK MainWindow::hKeyboardHook = nullptr;
 
 MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent),
-	left_pressed(false),
-	right_pressed(false),
+	left_pressed_count(0),
+	right_pressed_count(0),
 	mahiro_count(0),
 	setting_window(nullptr)
 {
@@ -54,11 +54,11 @@ void MainWindow::paintEvent(QPaintEvent* e) {
 		mahiro_index = mahiro_image_count - 1 - (mahiro_count % mahiro_image_count);
 	}
 	painter.drawPixmap(0, 0, *m_mahiro_images[mahiro_index]);
-	QPixmap* left_pixmap = left_pressed ? m_left_hand_images[1] : m_left_hand_images[0];
+	QPixmap* left_pixmap = left_pressed_count > 0 ? m_left_hand_images[1] : m_left_hand_images[0];
 	if (left_pixmap) {
 		painter.drawPixmap(left_pixmap->width(), 0, *left_pixmap);
 	}
-	QPixmap* right_pixmap = right_pressed ? m_right_hand_images[1] : m_right_hand_images[0];
+	QPixmap* right_pixmap = right_pressed_count > 0 ? m_right_hand_images[1] : m_right_hand_images[0];
 	if (right_pixmap) {
 		painter.drawPixmap(0, 0, *right_pixmap);
 	}
@@ -81,7 +81,7 @@ void MainWindow::load_resources() {
 	m_left_hand_images.push_back(new QPixmap(":/Resources/left.png"));
 	m_left_hand_images.push_back(nullptr);
 	m_right_hand_images.push_back(new QPixmap(":/Resources/right.png"));
-	m_right_hand_images.push_back(new QPixmap(":/Resources/right_pressed.png"));
+	m_right_hand_images.push_back(new QPixmap(":/Resources/right_pressed_count.png"));
 }
 
 void MainWindow::load_userdata() {
@@ -109,6 +109,9 @@ void MainWindow::quit_hook() {
 }
 
 LRESULT WINAPI MainWindow::KeyboardProc(INT code, WPARAM wParam, LPARAM lParam) {
+	static std::set<DWORD> left_pressed_keys;
+	static std::set<DWORD> right_pressed_keys;
+
 	if (UserData::instance()->open_dialog) {
 		return CallNextHookEx(hKeyboardHook, code, wParam, lParam);
 	}
@@ -132,23 +135,31 @@ LRESULT WINAPI MainWindow::KeyboardProc(INT code, WPARAM wParam, LPARAM lParam) 
 		}
 
 		if (UserData::instance()->left_key.count(info->vkCode) > 0) {
-			MainWindow::current->left_pressed = true;
+			if (left_pressed_keys.count(info->vkCode) == 0) {
+				MainWindow::current->left_pressed_count++;
+				left_pressed_keys.insert(info->vkCode);
+			}
 			MainWindow::current->mahiro_count++;
 			MainWindow::current->update();
 		}
 		if (UserData::instance()->right_key.count(info->vkCode) > 0) {
-			MainWindow::current->right_pressed = true;
+			if (right_pressed_keys.count(info->vkCode) == 0) {
+				MainWindow::current->right_pressed_count++;
+				right_pressed_keys.insert(info->vkCode);
+			}
 			MainWindow::current->mahiro_count++;
 			MainWindow::current->update();
 		}
 	}
 	else {
 		if (UserData::instance()->left_key.count(info->vkCode) > 0) {
-			MainWindow::current->left_pressed = false;
+			left_pressed_keys.erase(info->vkCode);
+			MainWindow::current->left_pressed_count--;
 			MainWindow::current->update();
 		}
 		if (UserData::instance()->right_key.count(info->vkCode) > 0) {
-			MainWindow::current->right_pressed = false;
+			right_pressed_keys.erase(info->vkCode);
+			MainWindow::current->right_pressed_count--;
 			MainWindow::current->update();
 		}
 	}
