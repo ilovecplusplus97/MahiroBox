@@ -33,6 +33,10 @@ bool UserData::load(const std::string& filename) {
 	if (right == nullptr) {
 		return false;
 	}
+	auto* topwindow = root->FirstChildElement("topwindow");
+	if (topwindow == nullptr) {
+		return false;
+	}
 	left_key.clear();
 	right_key.clear();
 	for (auto* i = left->FirstChildElement(); i != nullptr; i = i->NextSiblingElement()) {
@@ -41,6 +45,7 @@ bool UserData::load(const std::string& filename) {
 	for (auto* i = right->FirstChildElement(); i != nullptr; i = i->NextSiblingElement()) {
 		right_key.insert(i->Unsigned64Text());
 	}
+	top_window = topwindow->BoolText();
 	return true;
 }
 
@@ -65,5 +70,17 @@ void UserData::save(const std::string& filename) const {
 		right->InsertEndChild(key);
 	}
 
+	auto* topwindow = doc.NewElement("topwindow");
+	root->InsertEndChild(topwindow);
+	topwindow->SetText(top_window);
+
 	doc.SaveFile(filename.c_str());
+}
+
+UserData::UserData() :
+	left_key(),
+	right_key(),
+	top_window(false)
+{
+
 }

@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget* parent)
 
 	setFixedSize(size());
 	load_resources();
+	load_userdata();
 }
 
 MainWindow::~MainWindow()
@@ -45,7 +46,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::paintEvent(QPaintEvent* e) {
 	QPainter painter(this);
-	painter.drawPixmap(0, 0, *(m_mahiro_images[mahiro_count % mahiro_image_count]));
+	int mahiro_index = 0;
+	if ((mahiro_count / mahiro_image_count) % 2 == 0) {
+		mahiro_index = mahiro_count % mahiro_image_count;
+	}
+	else {
+		mahiro_index = mahiro_image_count - 1 - (mahiro_count % mahiro_image_count);
+	}
+	painter.drawPixmap(0, 0, *m_mahiro_images[mahiro_index]);
 	QPixmap* left_pixmap = left_pressed ? m_left_hand_images[1] : m_left_hand_images[0];
 	if (left_pixmap) {
 		painter.drawPixmap(left_pixmap->width(), 0, *left_pixmap);
@@ -58,10 +66,11 @@ void MainWindow::paintEvent(QPaintEvent* e) {
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent* e) {
 	if (setting_window != nullptr) {
+		setting_window->close();
 		delete setting_window;
 	}
 	setting_window = new SettingWindow(this);
-	setting_window->exec();
+	setting_window->show();
 }
 
 void MainWindow::load_resources() {
@@ -73,6 +82,17 @@ void MainWindow::load_resources() {
 	m_left_hand_images.push_back(nullptr);
 	m_right_hand_images.push_back(new QPixmap(":/Resources/right.png"));
 	m_right_hand_images.push_back(new QPixmap(":/Resources/right_pressed.png"));
+}
+
+void MainWindow::load_userdata() {
+	UserData* userdata = UserData::instance();
+	Qt::WindowFlags flags = Qt::Window | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint | Qt::WindowFullscreenButtonHint;
+	if (userdata->top_window) {
+		flags = flags | Qt::WindowStaysOnTopHint;
+	}
+	this->hide();
+	setWindowFlags(flags);
+	this->show();
 }
 
 void MainWindow::init_hook() {

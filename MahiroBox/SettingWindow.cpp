@@ -13,7 +13,7 @@ SettingWindow::SettingWindow(QWidget *parent)
 
 	m_old_left_text = ui.W2LeftKeyAddButton->text();
 	m_old_right_text = ui.W2RightKeyAddButton->text();
-	load_keys();
+	load_userdata();
 }
 
 SettingWindow::~SettingWindow()
@@ -94,7 +94,7 @@ void SettingWindow::on_W1RightKeyList_itemDoubleClicked(QListWidgetItem* item) {
 	delete key_item;
 }
 
-void SettingWindow::load_keys() {
+void SettingWindow::load_userdata() {
 	ui.W1LeftKeyList->clear();
 	ui.W1RightKeyList->clear();
 	for (auto i : UserData::instance()->left_key) {
@@ -103,6 +103,7 @@ void SettingWindow::load_keys() {
 	for (auto i : UserData::instance()->right_key) {
 		add_right_key(i, MapVirtualKey(i, MAPVK_VK_TO_VSC));
 	}
+	ui.W1TopWindowCheck->setChecked(UserData::instance()->top_window);
 }
 
 void SettingWindow::closeEvent(QCloseEvent*) {
@@ -115,6 +116,8 @@ void SettingWindow::reject() {
 }
 
 void SettingWindow::on_W1LoadButton_clicked() {
+	auto* mainwindow = dynamic_cast<MainWindow*>(parent());
+
 	UserData::instance()->open_dialog = true;
 	QString filename = QFileDialog::getOpenFileName(this, "选择文件", QString(), "XML配置文件(*.xml)");
 	UserData::instance()->open_dialog = false;
@@ -127,7 +130,8 @@ void SettingWindow::on_W1LoadButton_clicked() {
 		UserData::instance()->open_dialog = false;
 		return;
 	}
-	load_keys();
+	load_userdata();
+	mainwindow->load_userdata();
 }
 
 void SettingWindow::on_W2SaveButton_clicked() {
@@ -138,4 +142,10 @@ void SettingWindow::on_W2SaveButton_clicked() {
 		return;
 	}
 	UserData::instance()->save(filename.toStdString());
+}
+
+void SettingWindow::on_W1TopWindowCheck_clicked() {
+	auto* mainwindow = dynamic_cast<MainWindow*>(parent());
+	UserData::instance()->top_window = ui.W1TopWindowCheck->isChecked();
+	mainwindow->load_userdata();
 }
