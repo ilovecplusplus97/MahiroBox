@@ -37,6 +37,7 @@ private slots:
 	void on_W1RightKeyList_itemDoubleClicked(QListWidgetItem* item);
 	void on_W1LoadButton_clicked();
 	void on_W2SaveButton_clicked();
+	void on_W1TopWindowCheck_clicked();
 private:
 	Ui::SettingWindowClass ui;
 
@@ -45,6 +46,6 @@ private:
 	bool m_selected_left;
 	bool m_selected_right;
 
-	void load_keys();
+	void load_userdata();
 };
 

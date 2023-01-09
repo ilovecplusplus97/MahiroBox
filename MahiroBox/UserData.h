@@ -12,6 +12,7 @@ public:
 
 	std::set<DWORD> left_key;
 	std::set<DWORD> right_key;
+	bool top_window;
 	bool open_dialog;
 
 	bool load(const std::string& filename);
@@ -19,5 +20,5 @@ public:
 private:
 	static UserData* m_instance;
 
-	UserData() = default;
+	UserData();
 };
