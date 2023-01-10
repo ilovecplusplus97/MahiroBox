@@ -25,9 +25,6 @@ private:
     static HHOOK hKeyboardHook;
 
     Ui::MainWindowClass ui;
-    std::vector<QPixmap*> m_mahiro_images;
-    std::vector<QPixmap*> m_left_hand_images;
-    std::vector<QPixmap*> m_right_hand_images;
 	SettingWindow* setting_window;
 	int left_pressed_count;
 	int right_pressed_count;

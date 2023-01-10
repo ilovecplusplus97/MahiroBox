@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <QMainWindow>
 #include "ui_SettingWindow.h"
 
@@ -38,6 +39,7 @@ private slots:
 	void on_W1LoadButton_clicked();
 	void on_W2SaveButton_clicked();
 	void on_W1TopWindowCheck_clicked();
+	void on_W2StyleCombo_currentTextChanged(QString path);
 private:
 	Ui::SettingWindowClass ui;
 

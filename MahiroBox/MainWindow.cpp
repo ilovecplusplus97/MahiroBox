@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "UserData.h"
+#include "ResourceManager.h"
 #include "SettingWindow.h"
 #include "MainWindow.h"
-
-constexpr int mahiro_image_count = 7;
 
 MainWindow* MainWindow::current = nullptr;
 HHOOK MainWindow::hKeyboardHook = nullptr;
@@ -20,32 +19,21 @@ MainWindow::MainWindow(QWidget* parent)
 	current = this;
 
 	setFixedSize(size());
-	load_resources();
 	load_userdata();
 }
 
 MainWindow::~MainWindow()
 {
-	for (auto* image : m_mahiro_images) {
-		if (image != nullptr) {
-			delete image;
-		}
-	}
-	for (auto* image : m_left_hand_images) {
-		if (image != nullptr) {
-			delete image;
-		}
-	}
-	for (auto* image : m_right_hand_images) {
-		if (image != nullptr) {
-			delete image;
-		}
-	}
 	quit_hook();
 }
 
 void MainWindow::paintEvent(QPaintEvent* e) {
 	QPainter painter(this);
+	Resource* resource = ResourceManager::instance()->get(UserData::instance()->style);
+	if (resource == nullptr) {
+		return;
+	}
+	int mahiro_image_count = resource->mahiro.size();
 	int mahiro_index = 0;
 	if ((mahiro_count / mahiro_image_count) % 2 == 0) {
 		mahiro_index = mahiro_count % mahiro_image_count;
@@ -53,12 +41,12 @@ void MainWindow::paintEvent(QPaintEvent* e) {
 	else {
 		mahiro_index = mahiro_image_count - 1 - (mahiro_count % mahiro_image_count);
 	}
-	painter.drawPixmap(0, 0, *m_mahiro_images[mahiro_index]);
-	QPixmap* left_pixmap = left_pressed_count > 0 ? m_left_hand_images[1] : m_left_hand_images[0];
+	painter.drawPixmap(0, 0, *resource->mahiro[mahiro_index]);
+	QPixmap* left_pixmap = left_pressed_count > 0 ? resource->left_hand[1] : resource->left_hand[0];
 	if (left_pixmap != nullptr) {
 		painter.drawPixmap(left_pixmap->width(), 0, *left_pixmap);
 	}
-	QPixmap* right_pixmap =  right_pressed_count > 0 ? m_right_hand_images[1] : m_right_hand_images[0];
+	QPixmap* right_pixmap =  right_pressed_count > 0 ? resource->right_hand[1] : resource->right_hand[0];
 	if (right_pixmap != nullptr) {
 		painter.drawPixmap(0, 0, *right_pixmap);
 	}
@@ -71,17 +59,6 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent* e) {
 	}
 	setting_window = new SettingWindow(this);
 	setting_window->show();
-}
-
-void MainWindow::load_resources() {
-	static QString mahiro_path_fmt = ":/Resources/%1.png";
-	for (int i = 1; i <= mahiro_image_count; i++) {
-		m_mahiro_images.push_back(new QPixmap(mahiro_path_fmt.arg(i)));
-	}
-	m_left_hand_images.push_back(new QPixmap(":/Resources/left.png"));
-	m_left_hand_images.push_back(nullptr);
-	m_right_hand_images.push_back(new QPixmap(":/Resources/right.png"));
-	m_right_hand_images.push_back(new QPixmap(":/Resources/right_pressed.png"));
 }
 
 void MainWindow::load_userdata() {

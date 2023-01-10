@@ -12,6 +12,7 @@ public:
 
 	std::set<DWORD> left_key;
 	std::set<DWORD> right_key;
+	std::wstring style;
 	bool top_window;
 	bool open_dialog;
 

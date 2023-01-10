@@ -2,6 +2,7 @@
 #include "UserData.h"
 #include "Utility.h"
 #include "MainWindow.h"
+#include "ResourceManager.h"
 #include "SettingWindow.h"
 
 SettingWindow::SettingWindow(QWidget *parent)
@@ -104,6 +105,13 @@ void SettingWindow::load_userdata() {
 		add_right_key(i, MapVirtualKey(i, MAPVK_VK_TO_VSC));
 	}
 	ui.W1TopWindowCheck->setChecked(UserData::instance()->top_window);
+	std::filesystem::directory_iterator dir("mahiro_style");
+	for (auto& i : dir) {
+		if (!i.is_directory()) {
+			continue;
+		}
+		ui.W2StyleCombo->addItem(QString::fromStdWString(standard_path(i.path().wstring())));
+	}
 }
 
 void SettingWindow::closeEvent(QCloseEvent*) {
@@ -148,4 +156,14 @@ void SettingWindow::on_W1TopWindowCheck_clicked() {
 	auto* mainwindow = dynamic_cast<MainWindow*>(parent());
 	UserData::instance()->top_window = ui.W1TopWindowCheck->isChecked();
 	mainwindow->load_userdata();
+}
+
+void SettingWindow::on_W2StyleCombo_currentTextChanged(QString path) {
+	if (path.toStdWString() == UserData::instance()->style) {
+		return;
+	}
+	auto* mainwindow = dynamic_cast<MainWindow*>(parent());
+	UserData::instance()->style = path.toStdWString();
+	ResourceManager::instance()->load(path.toStdWString());
+	mainwindow->update();
 }

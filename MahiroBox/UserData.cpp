@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "tinyxml2.h"
+#include "Utility.h"
 #include "UserData.h"
 
 UserData* UserData::m_instance = nullptr;
@@ -37,6 +38,10 @@ bool UserData::load(const std::string& filename) {
 	if (topwindow == nullptr) {
 		return false;
 	}
+	auto* style = root->FirstChildElement("style");
+	if (style == nullptr) {
+		return false;
+	}
 	left_key.clear();
 	right_key.clear();
 	for (auto* i = left->FirstChildElement(); i != nullptr; i = i->NextSiblingElement()) {
@@ -46,6 +51,9 @@ bool UserData::load(const std::string& filename) {
 		right_key.insert(i->Unsigned64Text());
 	}
 	top_window = topwindow->BoolText();
+	const wchar_t* s = multi_to_wide(style->GetText(), CP_UTF8);
+	this->style = s;
+	delete s;
 	return true;
 }
 
@@ -74,13 +82,21 @@ void UserData::save(const std::string& filename) const {
 	root->InsertEndChild(topwindow);
 	topwindow->SetText(top_window);
 
+	auto* style = doc.NewElement("style");
+	root->InsertEndChild(style);
+	char* s = wide_to_multi(this->style.c_str(), CP_UTF8);
+	style->SetText(s);
+
 	doc.SaveFile(filename.c_str());
+	delete s;
 }
 
 UserData::UserData() :
 	left_key(),
 	right_key(),
-	top_window(false)
+	open_dialog(false),
+	top_window(false),
+	style(L"mahiro_style/default")
 {
 
 }
