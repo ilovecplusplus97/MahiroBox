@@ -55,11 +55,11 @@ void MainWindow::paintEvent(QPaintEvent* e) {
 	}
 	painter.drawPixmap(0, 0, *m_mahiro_images[mahiro_index]);
 	QPixmap* left_pixmap = left_pressed_count > 0 ? m_left_hand_images[1] : m_left_hand_images[0];
-	if (left_pixmap) {
+	if (left_pixmap != nullptr) {
 		painter.drawPixmap(left_pixmap->width(), 0, *left_pixmap);
 	}
-	QPixmap* right_pixmap = right_pressed_count > 0 ? m_right_hand_images[1] : m_right_hand_images[0];
-	if (right_pixmap) {
+	QPixmap* right_pixmap =  right_pressed_count > 0 ? m_right_hand_images[1] : m_right_hand_images[0];
+	if (right_pixmap != nullptr) {
 		painter.drawPixmap(0, 0, *right_pixmap);
 	}
 }
@@ -81,7 +81,7 @@ void MainWindow::load_resources() {
 	m_left_hand_images.push_back(new QPixmap(":/Resources/left.png"));
 	m_left_hand_images.push_back(nullptr);
 	m_right_hand_images.push_back(new QPixmap(":/Resources/right.png"));
-	m_right_hand_images.push_back(new QPixmap(":/Resources/right_pressed_count.png"));
+	m_right_hand_images.push_back(new QPixmap(":/Resources/right_pressed.png"));
 }
 
 void MainWindow::load_userdata() {
