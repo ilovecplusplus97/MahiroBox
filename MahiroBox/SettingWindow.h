@@ -30,7 +30,7 @@ public:
 	void add_right_key(DWORD vkcode, DWORD scancode);
 
 	void closeEvent(QCloseEvent*) override;
-	void reject() override;
+	void keyPressEvent(QKeyEvent* e) override;
 private slots:
 	void on_W2LeftKeyAddButton_clicked();
 	void on_W2RightKeyAddButton_clicked();
@@ -49,5 +49,6 @@ private:
 	bool m_selected_right;
 
 	void load_userdata();
+	void set_focus(QWidget* widget);
 };
 

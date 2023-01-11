@@ -15,6 +15,7 @@ SettingWindow::SettingWindow(QWidget *parent)
 	m_old_left_text = ui.W2LeftKeyAddButton->text();
 	m_old_right_text = ui.W2RightKeyAddButton->text();
 	load_userdata();
+	set_focus(this);
 }
 
 SettingWindow::~SettingWindow()
@@ -114,13 +115,26 @@ void SettingWindow::load_userdata() {
 	}
 }
 
+void SettingWindow::set_focus(QWidget* widget) {
+	for (auto* i : widget->children()) {
+		if (i->isWidgetType()) {
+			QWidget* child = qobject_cast<QWidget*>(i);
+			child->setFocusPolicy(Qt::NoFocus);
+			set_focus(child);
+		}
+	}
+}
+
 void SettingWindow::closeEvent(QCloseEvent*) {
 	m_selected_left = false;
 	m_selected_right = false;
 }
 
-void SettingWindow::reject() {
-
+void SettingWindow::keyPressEvent(QKeyEvent* e) {
+	if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return || e->key() == Qt::Key_Tab || Qt::Key_Escape) {
+		return;
+	}
+	QDialog::keyPressEvent(e);
 }
 
 void SettingWindow::on_W1LoadButton_clicked() {

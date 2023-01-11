@@ -5,11 +5,11 @@
 MahiroBox v1.0.2 添加了自定义风格功能，但是软件中没有自定义风格的界面（因为我懒），所以只能通过在mahiro_style文件夹下添加文件夹来自定义风格
 ## 创建风格
 进入mahiro_style文件夹<br>
-![mahiro文件夹](https://c2.im5i.com/2023/01/10/YKaeL.png)
+![mahiro文件夹](https://c2.im5i.com/2023/01/10/YKaeL.png)<br>
 会发现有个default文件夹，那就是风格模板，复制一份，改为你的风格的名字，就成功了。
 ## 修改风格
 进入你的风格文件夹，你会发现有这样一些文件
-![风格文件夹里的文件](https://c2.im5i.com/2023/01/10/YKp6t.png)
+![风格文件夹里的文件](https://c2.im5i.com/2023/01/10/YKp6t.png)<br>
 这些文件是资源文件，它们有这样的作用
 - *.png：显示在屏幕上的图片
 - info.xml: 配置文件，引领程序加载你的图片
