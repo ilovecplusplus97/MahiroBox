@@ -15,6 +15,8 @@ public:
 	std::wstring style;
 	bool top_window;
 	bool open_dialog;
+	bool is_wallpaper;
+	bool not_show_wallpaper_info;
 
 	bool load(const std::string& filename);
 	void save(const std::string& filename) const;

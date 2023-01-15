@@ -42,6 +42,14 @@ bool UserData::load(const std::string& filename) {
 	if (style == nullptr) {
 		return false;
 	}
+	auto* wallpaper = root->FirstChildElement("wallpaper");
+	if (wallpaper == nullptr) {
+		return false;
+	}
+	auto* notshowwallpaperinfo = root->FirstChildElement("notshowwallpaperinfo");
+	if (notshowwallpaperinfo == nullptr) {
+		return false;
+	}
 	left_key.clear();
 	right_key.clear();
 	for (auto* i = left->FirstChildElement(); i != nullptr; i = i->NextSiblingElement()) {
@@ -54,6 +62,8 @@ bool UserData::load(const std::string& filename) {
 	const wchar_t* s = multi_to_wide(style->GetText(), CP_UTF8);
 	this->style = s;
 	delete s;
+	is_wallpaper = wallpaper->BoolText();
+	not_show_wallpaper_info = notshowwallpaperinfo->BoolText();
 	return true;
 }
 
@@ -86,6 +96,14 @@ void UserData::save(const std::string& filename) const {
 	root->InsertEndChild(style);
 	char* s = wide_to_multi(this->style.c_str(), CP_UTF8);
 	style->SetText(s);
+	
+	auto* wallpaper = doc.NewElement("wallpaper");
+	root->InsertEndChild(wallpaper);
+	wallpaper->SetText(is_wallpaper);
+
+	auto* notshowwallpaperinfo = doc.NewElement("notshowwallpaperinfo");
+	root->InsertEndChild(notshowwallpaperinfo);
+	notshowwallpaperinfo->SetText(not_show_wallpaper_info);
 
 	doc.SaveFile(filename.c_str());
 	delete s;
@@ -96,7 +114,9 @@ UserData::UserData() :
 	right_key(),
 	open_dialog(false),
 	top_window(false),
-	style(L"mahiro_style/default")
+	style(L"mahiro_style/default"),
+	is_wallpaper(false),
+	not_show_wallpaper_info(false)
 {
 
 }

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>639</width>
+    <width>593</width>
     <height>427</height>
    </rect>
   </property>
@@ -89,7 +89,7 @@
            <property name="frameShadow">
             <enum>QFrame::Raised</enum>
            </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <layout class="QGridLayout" name="gridLayout_2">
             <property name="leftMargin">
              <number>0</number>
             </property>
@@ -102,7 +102,7 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item>
+            <item row="0" column="0">
              <spacer name="horizontalSpacer_2">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -115,17 +115,7 @@
               </property>
              </spacer>
             </item>
-            <item>
-             <widget class="QCheckBox" name="W1TopWindowCheck">
-              <property name="layoutDirection">
-               <enum>Qt::LeftToRight</enum>
-              </property>
-              <property name="text">
-               <string>置顶窗口</string>
-              </property>
-             </widget>
-            </item>
-            <item>
+            <item row="0" column="2">
              <spacer name="horizontalSpacer_3">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -140,6 +130,23 @@
                </size>
               </property>
              </spacer>
+            </item>
+            <item row="2" column="1">
+             <widget class="QCheckBox" name="W2WallpaperCheck">
+              <property name="text">
+               <string>桌面壁纸</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QCheckBox" name="W1TopWindowCheck">
+              <property name="layoutDirection">
+               <enum>Qt::LeftToRight</enum>
+              </property>
+              <property name="text">
+               <string>置顶窗口</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>

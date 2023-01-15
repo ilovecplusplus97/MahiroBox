@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>真寻拍拍++ 双击打开设置</string>
+   <string>真寻拍拍++ 左键双击打开设置 右键双击退出</string>
   </property>
   <property name="windowIcon">
    <iconset resource="MainWindow.qrc">
