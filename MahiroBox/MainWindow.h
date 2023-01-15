@@ -19,6 +19,7 @@ public:
 
     virtual void paintEvent(QPaintEvent* e) override;
     virtual void mouseDoubleClickEvent(QMouseEvent* e) override;
+	virtual void closeEvent(QCloseEvent* e) override;
 	virtual void keyPressEvent(QKeyEvent* e) override;
 
 	void switch_wallpaper(bool wallpaper);

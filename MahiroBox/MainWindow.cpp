@@ -64,6 +64,13 @@ void MainWindow::paintEvent(QPaintEvent* e) {
 	}
 }
 
+void MainWindow::closeEvent(QCloseEvent* e) {
+	if (setting_window != nullptr) {
+		setting_window->close();
+		delete setting_window;
+	}
+}
+
 void MainWindow::mouseDoubleClickEvent(QMouseEvent* e) {
 	switch (e->button()) {
 	case Qt::LeftButton: {
