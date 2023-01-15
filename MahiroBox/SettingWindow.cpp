@@ -105,7 +105,7 @@ void SettingWindow::load_userdata() {
 	for (auto i : UserData::instance()->right_key) {
 		add_right_key(i, MapVirtualKey(i, MAPVK_VK_TO_VSC));
 	}
-	ui.W1TopWindowCheck->setChecked(UserData::instance()->top_window);
+	ui.W1TopWindowCheck->setChecked(UserData::instance()->top_window && !UserData::instance()->is_wallpaper);
 	std::filesystem::directory_iterator dir("mahiro_style");
 	for (auto& i : dir) {
 		if (!i.is_directory()) {
@@ -113,6 +113,8 @@ void SettingWindow::load_userdata() {
 		}
 		ui.W2StyleCombo->addItem(QString::fromStdWString(standard_path(i.path().wstring())));
 	}
+	ui.W2WallpaperCheck->setChecked(UserData::instance()->is_wallpaper);
+	ui.W1TopWindowCheck->setDisabled(UserData::instance()->is_wallpaper);
 }
 
 void SettingWindow::set_focus(QWidget* widget) {
@@ -138,8 +140,6 @@ void SettingWindow::keyPressEvent(QKeyEvent* e) {
 }
 
 void SettingWindow::on_W1LoadButton_clicked() {
-	auto* mainwindow = dynamic_cast<MainWindow*>(parent());
-
 	UserData::instance()->open_dialog = true;
 	QString filename = QFileDialog::getOpenFileName(this, "选择文件", QString(), "XML配置文件(*.xml)");
 	UserData::instance()->open_dialog = false;
@@ -153,7 +153,7 @@ void SettingWindow::on_W1LoadButton_clicked() {
 		return;
 	}
 	load_userdata();
-	mainwindow->load_userdata();
+	MainWindow::current->load_userdata();
 }
 
 void SettingWindow::on_W2SaveButton_clicked() {
@@ -166,18 +166,34 @@ void SettingWindow::on_W2SaveButton_clicked() {
 	UserData::instance()->save(filename.toStdString());
 }
 
-void SettingWindow::on_W1TopWindowCheck_clicked() {
-	auto* mainwindow = dynamic_cast<MainWindow*>(parent());
+void SettingWindow::on_W1TopWindowCheck_clicked() {	
 	UserData::instance()->top_window = ui.W1TopWindowCheck->isChecked();
-	mainwindow->load_userdata();
+	MainWindow::current->load_userdata();
+}
+
+void SettingWindow::on_W2WallpaperCheck_clicked() {
+	auto* userdata = UserData::instance();
+	userdata->is_wallpaper = ui.W2WallpaperCheck->isChecked();
+	if (userdata->is_wallpaper) {
+		userdata->top_window = false;
+		ui.W1TopWindowCheck->setChecked(false);
+		ui.W1TopWindowCheck->setDisabled(true);
+		if (!userdata->not_show_wallpaper_info) {
+			userdata->not_show_wallpaper_info = QMessageBox::information(this, "提示", "在桌面双击右键退出软件", "确定", "不再提示") == 1;
+		}
+	}
+	else {
+		ui.W1TopWindowCheck->setDisabled(false);
+	}
+	MainWindow::current->load_userdata();
 }
 
 void SettingWindow::on_W2StyleCombo_currentTextChanged(QString path) {
 	if (path.toStdWString() == UserData::instance()->style) {
 		return;
 	}
-	auto* mainwindow = dynamic_cast<MainWindow*>(parent());
+	
 	UserData::instance()->style = path.toStdWString();
 	ResourceManager::instance()->load(path.toStdWString());
-	mainwindow->update();
+	MainWindow::current->update();
 }

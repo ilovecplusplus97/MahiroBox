@@ -1,11 +1,13 @@
 #include "stdafx.h"
 #include "UserData.h"
+#include "Utility.h"
 #include "ResourceManager.h"
 #include "SettingWindow.h"
 #include "MainWindow.h"
 
 MainWindow* MainWindow::current = nullptr;
 HHOOK MainWindow::hKeyboardHook = nullptr;
+HHOOK MainWindow::hMouseHook = nullptr;
 
 MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent),
@@ -17,8 +19,9 @@ MainWindow::MainWindow(QWidget* parent)
 	ui.setupUi(this);
 	init_hook();
 	current = this;
+	normal_size = size();
+	normal_flags = windowFlags();
 
-	setFixedSize(size());
 	load_userdata();
 }
 
@@ -30,6 +33,15 @@ MainWindow::~MainWindow()
 void MainWindow::paintEvent(QPaintEvent* e) {
 	QPainter painter(this);
 	Resource* resource = ResourceManager::instance()->get(UserData::instance()->style);
+	QPointF scale(1.0f, 1.0f);
+	for (int i = 0; i < resource->mahiro.size(); i++) {
+		if (resource->mahiro[i] == nullptr) {
+			continue;
+		}
+		scale.setX((qreal)width() / resource->mahiro[i]->width());
+		scale.setY((qreal)height() / resource->mahiro[i]->height());
+		break;
+	}
 	if (resource == nullptr) {
 		return;
 	}
@@ -41,40 +53,76 @@ void MainWindow::paintEvent(QPaintEvent* e) {
 	else {
 		mahiro_index = mahiro_image_count - 1 - (mahiro_count % mahiro_image_count);
 	}
-	painter.drawPixmap(0, 0, *resource->mahiro[mahiro_index]);
+	painter.drawPixmap(0, 0, width(), height(), *resource->mahiro[mahiro_index]);
 	QPixmap* left_pixmap = left_pressed_count > 0 ? resource->left_hand[1] : resource->left_hand[0];
 	if (left_pixmap != nullptr) {
-		painter.drawPixmap(left_pixmap->width(), 0, *left_pixmap);
+		painter.drawPixmap(left_pixmap->width() * scale.x(), 0, width() / 2, height(), *left_pixmap);
 	}
-	QPixmap* right_pixmap =  right_pressed_count > 0 ? resource->right_hand[1] : resource->right_hand[0];
+	QPixmap* right_pixmap = right_pressed_count > 0 ? resource->right_hand[1] : resource->right_hand[0];
 	if (right_pixmap != nullptr) {
-		painter.drawPixmap(0, 0, *right_pixmap);
+		painter.drawPixmap(0, 0, width() / 2, height(), *right_pixmap);
 	}
 }
 
 void MainWindow::mouseDoubleClickEvent(QMouseEvent* e) {
-	if (setting_window != nullptr) {
-		setting_window->close();
-		delete setting_window;
+	switch (e->button()) {
+	case Qt::LeftButton: {
+		if (setting_window != nullptr) {
+			setting_window->close();
+			delete setting_window;
+		}
+		setting_window = new SettingWindow(nullptr);
+		setting_window->show();
+		break;
 	}
-	setting_window = new SettingWindow(this);
-	setting_window->show();
+	case Qt::RightButton: {
+		close();
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+void MainWindow::keyPressEvent(QKeyEvent* e) {
+	
+}
+
+void MainWindow::switch_wallpaper(bool wallpaper) {
+	if (wallpaper) {
+		RECT desktop_rect;
+		SystemParametersInfoW(SPI_GETWORKAREA, 0, &desktop_rect, 0);
+		MoveWindow((HWND)winId(), 0, 0, desktop_rect.right, desktop_rect.bottom, TRUE);
+		SetParent((HWND)winId(), get_wallpaper_window());
+	}
+	else {
+		resize(normal_size);
+		move(100, 100);
+		SetParent((HWND)winId(), nullptr);
+	}
 }
 
 void MainWindow::load_userdata() {
 	UserData* userdata = UserData::instance();
-	Qt::WindowFlags flags = Qt::Window | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint | Qt::WindowCloseButtonHint | Qt::WindowFullscreenButtonHint;
+	Qt::WindowFlags flags(normal_flags);
 	if (userdata->top_window) {
 		flags = flags | Qt::WindowStaysOnTopHint;
+	}
+	if (userdata->is_wallpaper) {
+		flags = flags | Qt::FramelessWindowHint;
 	}
 	this->hide();
 	setWindowFlags(flags);
 	this->show();
+	switch_wallpaper(userdata->is_wallpaper);
 }
 
 void MainWindow::init_hook() {
 	if (hKeyboardHook == nullptr) {
 		hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, nullptr, 0);
+	}
+	if (hMouseHook == nullptr) {
+		hMouseHook = SetWindowsHookEx(WH_MOUSE_LL, MouseProc, nullptr, 0);
 	}
 }
 
@@ -82,6 +130,10 @@ void MainWindow::quit_hook() {
 	if (hKeyboardHook != nullptr) {
 		UnhookWindowsHookEx(hKeyboardHook);
 		hKeyboardHook = nullptr;
+	}
+	if (hMouseHook != nullptr) {
+		UnhookWindowsHookEx(hMouseHook);
+		hMouseHook = nullptr;
 	}
 }
 
@@ -141,4 +193,39 @@ LRESULT WINAPI MainWindow::KeyboardProc(INT code, WPARAM wParam, LPARAM lParam) 
 		}
 	}
 	return CallNextHookEx(hKeyboardHook, code, wParam, lParam);
+}
+
+LRESULT WINAPI MainWindow::MouseProc(INT code, WPARAM wParam, LPARAM lParam) {
+	static INT64 begintime = -1;
+	INT64 nowtime = GetTickCount();
+	std::wstring window_text(256, L'\0');
+	GetClassNameW(GetForegroundWindow(), window_text.data(), 256);
+	if (
+		!UserData::instance()->is_wallpaper || 
+		window_text[0] != L'W' || window_text[1] != L'o' || window_text[2] != L'r' || window_text[3] != L'k' || 
+		window_text[4] != L'e' || window_text[5] != L'r' || window_text[6] != L'W') 
+	{
+		return CallNextHookEx(hMouseHook, code, wParam, lParam);
+	}
+	auto* info = reinterpret_cast<MSLLHOOKSTRUCT*>(lParam);
+	if (wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN) {
+		if (begintime == -1) {
+			begintime = GetTickCount();
+		}
+		else {
+			if (nowtime - begintime <= 200) {
+				QMouseEvent* event = new QMouseEvent(
+					QEvent::MouseButtonDblClick, 
+					QPointF(info->pt.x, info->pt.y), 
+					QPointF(info->pt.x, info->pt.y), 
+					wParam == WM_LBUTTONDOWN ? Qt::LeftButton : Qt::RightButton, 
+					Qt::MouseButtons(), 
+					Qt::KeyboardModifier::NoModifier);
+				MainWindow::current->mouseDoubleClickEvent(event);
+				delete event;
+			}
+			begintime = -1;
+		}
+	}
+	return CallNextHookEx(hMouseHook, code, wParam, lParam);
 }

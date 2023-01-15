@@ -13,3 +13,6 @@ std::string join(const std::string& a, const std::vector<std::string>& b);
 std::wstring join(const std::wstring& a, const std::vector<std::wstring>& b);
 char* wide_to_multi(const wchar_t* str, DWORD code_page);
 wchar_t* multi_to_wide(const char* str, DWORD code_page);
+HWND get_wallpaper_window();
+HWND get_workerw_window();
+static BOOL CALLBACK EnumWindowProc(HWND hwnd, LPARAM lParam);
