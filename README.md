@@ -1,6 +1,12 @@
 # MahiroBox
-一款使用C++编写的仿制[MahiroPatter](https://github.com/daiisuukee/mahiro_patter)的绪山真寻键盘监控软件<br><br>
-![软件界面](https://c2.im5i.com/2023/01/08/Yg1y8.png)<br><br>
+一款使用C++编写的仿[MahiroPatter](https://github.com/daiisuukee/mahiro_patter)的绪山真寻键盘监控软件<br><br>
+# 软件界面
+### 普通模式：
+![普通模式](https://c2.im5i.com/2023/01/08/Yg1y8.png)<br>
+### 壁纸模式：
+![壁纸模式](https://c2.im5i.com/2023/01/16/YsYL6.png)<br>
+### 设置
+![设置界面](https://c2.im5i.com/2023/01/16/Ys3EU.png)<br><br>
 # 自定义风格
 MahiroBox v1.0.2 添加了自定义风格功能，但是软件中没有自定义风格的界面（因为我懒），所以只能通过在mahiro_style文件夹下添加文件夹来自定义风格
 ## 创建风格
@@ -50,4 +56,6 @@ MahiroBox v1.0.2 添加了自定义风格功能，但是软件中没有自定义
 ## 使用风格
 修改完成后，重启MahiroBox，双击打开设置，在选项一栏中找到风格，修改为你的风格即可<br><br>
 # 尾页
+MahiroPatter: https://github.com/daiisuukee/mahiro_patter<br>
+Daiisuukee: https://github.com/daiisuukee<br><br>
 ![点个star吧](https://c2.im5i.com/2023/01/10/YK7bq.png)
