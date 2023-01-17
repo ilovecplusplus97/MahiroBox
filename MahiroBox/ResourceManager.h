@@ -9,6 +9,8 @@ struct Resource {
 	std::array<QPixmap*, 2> left_hand;
 	std::array<QPixmap*, 2> right_hand;
 	std::vector<QPixmap*> mahiro;
+	QPointF left_hand_position;
+	QPointF right_hand_position;
 
 	Resource();
 	~Resource();

@@ -31,17 +31,21 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::paintEvent(QPaintEvent* e) {
+	static auto paint = [](QPainter* painter, QPixmap* pixmap, const QPointF& position, const QPointF& scale) -> void {
+		QSizeF size = pixmap->size();
+		QRectF rect;
+		rect.setX(position.x() * scale.x());
+		rect.setY(position.y() * scale.y());
+		rect.setWidth(size.width() * scale.x());
+		rect.setHeight(size.height() * scale.y());
+		painter->drawPixmap(rect.toRect(), *pixmap);
+	};
+
 	QPainter painter(this);
 	Resource* resource = ResourceManager::instance()->get(UserData::instance()->style);
-	QPointF scale(1.0f, 1.0f);
-	for (int i = 0; i < resource->mahiro.size(); i++) {
-		if (resource->mahiro[i] == nullptr) {
-			continue;
-		}
-		scale.setX((qreal)width() / resource->mahiro[i]->width());
-		scale.setY((qreal)height() / resource->mahiro[i]->height());
-		break;
-	}
+	QPointF scale(1.0, 1.0);
+	scale.setX((qreal)width() / normal_size.width());
+	scale.setY((qreal)height() / normal_size.height());
 	if (resource == nullptr) {
 		return;
 	}
@@ -53,14 +57,16 @@ void MainWindow::paintEvent(QPaintEvent* e) {
 	else {
 		mahiro_index = mahiro_image_count - 1 - (mahiro_count % mahiro_image_count);
 	}
-	painter.drawPixmap(0, 0, width(), height(), *resource->mahiro[mahiro_index]);
+	if (resource->mahiro[mahiro_index] != nullptr) {
+		paint(&painter, resource->mahiro[mahiro_index], QPointF(0.0, 0.0), scale);
+	}
 	QPixmap* left_pixmap = left_pressed_count > 0 ? resource->left_hand[1] : resource->left_hand[0];
 	if (left_pixmap != nullptr) {
-		painter.drawPixmap(left_pixmap->width() * scale.x(), 0, width() / 2, height(), *left_pixmap);
+		paint(&painter, left_pixmap, resource->left_hand_position, scale);
 	}
 	QPixmap* right_pixmap = right_pressed_count > 0 ? resource->right_hand[1] : resource->right_hand[0];
 	if (right_pixmap != nullptr) {
-		painter.drawPixmap(0, 0, width() / 2, height(), *right_pixmap);
+		paint(&painter, right_pixmap, resource->right_hand_position, scale);
 	}
 }
 
@@ -126,10 +132,10 @@ void MainWindow::load_userdata() {
 
 void MainWindow::init_hook() {
 	if (hKeyboardHook == nullptr) {
-		hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, nullptr, 0);
+		//hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, nullptr, 0);
 	}
 	if (hMouseHook == nullptr) {
-		hMouseHook = SetWindowsHookEx(WH_MOUSE_LL, MouseProc, nullptr, 0);
+		//hMouseHook = SetWindowsHookEx(WH_MOUSE_LL, MouseProc, nullptr, 0);
 	}
 }
 

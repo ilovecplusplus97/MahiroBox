@@ -114,6 +114,10 @@ Resource* ResourceManager::load(const std::wstring& path, const std::wstring& ke
 		}
 		delete image_path_c;
 	}
+	resource->left_hand_position.setX(left->DoubleAttribute("x"));
+	resource->left_hand_position.setY(left->DoubleAttribute("y"));
+	resource->right_hand_position.setX(right->DoubleAttribute("x"));
+	resource->right_hand_position.setY(right->DoubleAttribute("y"));
 	return load(resource, key);
 }
 
@@ -183,7 +187,9 @@ ResourceManager::~ResourceManager() {
 Resource::Resource() :
 	left_hand({ nullptr, nullptr }),
 	right_hand({ nullptr, nullptr }),
-	mahiro()
+	mahiro(),
+	left_hand_position(0.0, 0.0),
+	right_hand_position(0.0, 0.0)
 {
 }
 

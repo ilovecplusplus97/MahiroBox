@@ -21,7 +21,7 @@ MahiroBox v1.0.2 添加了自定义风格功能，但是软件中没有自定义
 - info.xml: 配置文件，引领程序加载你的图片
 
 如果你要更改显示在屏幕上的真寻的样子，那么你就只用修改图片即可
-## 修改info.xml文件
+## 修改info.xml文件(v1.0.4前)
 如果你要给真寻添加一个动作，只是在文件夹中添加8.png是不行的，这时就需要修改info.xml文件了
 打开info.xml文件，有如下内容
 ```xml
@@ -53,6 +53,33 @@ MahiroBox v1.0.2 添加了自定义风格功能，但是软件中没有自定义
 - mahiro: 真寻的图片路径
 
 要修改路径就要修改节点下的image节点，image节点包含的是图片的路径（注：如果不显示就可以将image节点的内容改为null）
+## 修改info.xml文件(v1.0.4以及以后)
+打开info.xml文件，有如下内容
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+	<left x="320.0" y="0.0">
+		<image>left.png</image>
+		<image>null</image>
+	</left>
+	<right x="0.0" y="0.0">
+		<image>right.png</image>
+		<image>right_pressed.png</image>
+	</right>
+	<mahiro>
+		<image>1.png</image>
+		<image>2.png</image>
+		<image>3.png</image>
+		<image>4.png</image>
+		<image>5.png</image>
+		<image>6.png</image>
+		<image>7.png</image>
+	</mahiro>
+</root>
+```
+在v1.0.4版本添加了left和right的x, y属性，分别表示图片在软件中的显示位置，其余与v1.0.4之前相同。
+
 ## 使用风格
 修改完成后，重启MahiroBox，双击打开设置，在选项一栏中找到风格，修改为你的风格即可<br><br>
 # 尾页

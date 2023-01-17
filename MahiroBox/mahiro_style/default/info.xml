@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <root>
-	<left>
+	<left x="320.0" y="0.0">
 		<image>left.png</image>
 		<image>null</image>
 	</left>
-	<right>
+	<right x="0.0" y="0.0">
 		<image>right.png</image>
 		<image>right_pressed.png</image>
 	</right>
