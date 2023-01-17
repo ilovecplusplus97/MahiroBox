@@ -132,10 +132,10 @@ void MainWindow::load_userdata() {
 
 void MainWindow::init_hook() {
 	if (hKeyboardHook == nullptr) {
-		//hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, nullptr, 0);
+		hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, nullptr, 0);
 	}
 	if (hMouseHook == nullptr) {
-		//hMouseHook = SetWindowsHookEx(WH_MOUSE_LL, MouseProc, nullptr, 0);
+		hMouseHook = SetWindowsHookEx(WH_MOUSE_LL, MouseProc, nullptr, 0);
 	}
 }
 
