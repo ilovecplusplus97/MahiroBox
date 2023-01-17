@@ -104,6 +104,11 @@ void MainWindow::keyPressEvent(QKeyEvent* e) {
 void MainWindow::switch_wallpaper(bool wallpaper) {
 	if (wallpaper) {
 		RECT desktop_rect;
+		Qt::WindowStates states = windowState();
+		if (states & Qt::WindowMaximized) {
+			states = Qt::WindowStates::fromInt(Qt::WindowMaximized ^ states);
+		}
+		setWindowState(states);
 		SystemParametersInfoW(SPI_GETWORKAREA, 0, &desktop_rect, 0);
 		MoveWindow((HWND)winId(), 0, 0, desktop_rect.right, desktop_rect.bottom, TRUE);
 		SetParent((HWND)winId(), get_wallpaper_window());
@@ -116,7 +121,8 @@ void MainWindow::switch_wallpaper(bool wallpaper) {
 }
 
 void MainWindow::load_userdata() {
-	UserData* userdata = UserData::instance();
+	static UserData* userdata = UserData::instance();
+	static int is_wallpaper = -1;
 	Qt::WindowFlags flags(normal_flags);
 	if (userdata->top_window) {
 		flags = flags | Qt::WindowStaysOnTopHint;
@@ -127,7 +133,10 @@ void MainWindow::load_userdata() {
 	this->hide();
 	setWindowFlags(flags);
 	this->show();
-	switch_wallpaper(userdata->is_wallpaper);
+	if (is_wallpaper != (int)userdata->is_wallpaper) {
+		is_wallpaper = userdata->is_wallpaper;
+		switch_wallpaper(userdata->is_wallpaper);
+	}
 }
 
 void MainWindow::init_hook() {

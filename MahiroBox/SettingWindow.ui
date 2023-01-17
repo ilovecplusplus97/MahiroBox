@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>设置</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="MainWindow.qrc">
+    <normaloff>:/Resources/icon.ico</normaloff>:/Resources/icon.ico</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true"/>
   </property>
